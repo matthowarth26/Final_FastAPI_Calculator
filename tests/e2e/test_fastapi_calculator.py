@@ -394,3 +394,48 @@ def test_register_short_password_ui(page, base_url, fake_user_data):
     error_text = page.locator("#errorMessage").inner_text()
 
     assert "Password must be at least 8 characters long" in error_text
+
+# ---------------------------------------------------------------------------
+# Invalid Input Test
+# ---------------------------------------------------------------------------   
+def test_create_calculation_invalid_inputs(base_url: str):
+    user_data = {
+        "first_name": "Invalid",
+        "last_name": "Inputs",
+        "email": f"invalid.inputs{uuid4()}@example.com",
+        "username": f"inv_{uuid4().hex[:8]}", 
+        "password": "SecurePass123!",
+        "confirm_password": "SecurePass123!"
+    }
+
+    token_data = register_and_login(base_url, user_data)
+    headers = {"Authorization": f"Bearer {token_data['access_token']}"}
+
+    url = f"{base_url}/calculations"
+    payload = {
+        "type": "addition",
+        "inputs": ["a", 2],  # invalid input
+        "user_id": "ignored"
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    assert response.status_code in [400, 422]
+
+# ---------------------------------------------------------------------------
+# Unauthorized Access Test (no JWT)
+# ---------------------------------------------------------------------------   
+def test_create_calculation_unauthorized(base_url: str):
+    url = f"{base_url}/calculations"
+
+    payload = {
+        "type": "addition",
+        "inputs": [1, 2],
+        "user_id": "ignored"
+    }
+
+    # No Authorization header
+    response = requests.post(url, json=payload)
+
+    assert response.status_code == 401, \
+        f"Expected 401 Unauthorized, got {response.status_code}: {response.text}"
