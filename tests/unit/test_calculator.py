@@ -2,7 +2,7 @@
 
 import pytest  # Import the pytest framework for writing and running tests
 from typing import Union  # Import Union for type hinting multiple possible types
-from app.operations import add, subtract, multiply, divide  # Import the calculator functions from the operations module
+from app.operations import add, subtract, multiply, divide, exponentiate  # Import the calculator functions from the operations module
 
 # Define a type alias for numbers that can be either int or float
 Number = Union[int, float]
@@ -232,3 +232,51 @@ def test_divide_by_zero() -> None:
     # Assert that the exception message contains the expected error message
     assert "Cannot divide by zero!" in str(excinfo.value), \
         f"Expected error message 'Cannot divide by zero!', but got '{excinfo.value}'"
+    
+# ---------------------------------------------
+# Unit Tests for the 'exponentiate' Function
+# ---------------------------------------------
+
+@pytest.mark.parametrize(
+    "a, b, expected",
+    [
+        (2, 3, 8),           # Test raising a positive integer by the power of a positive integer
+        (-5, 2, 25),         # Test raising a negative integer by the power of an even positive integer
+        (10, 0, 1),          # Test raising a positive integer by the power of 0
+        (4.0, 0.5, 2.0),     # Test raising a positive float by the power of a fractional positive float
+        (-2, 3, -8),         # Test raising a negative integer by the power of an odd positive integer
+    ],
+    ids=[
+        "exponentiate_two_positive_integers",
+        "exponentiate_negative_integer_by_positive_integer",
+        "exponentiate_zero_power",
+        "exponentiate_positive_float_by_fractional_float",
+        "exponentiate_negative_integers_by_odd_integer",
+    ]
+)
+def test_exponentiate(a: Number, b: Number, expected: Number) -> None:
+    """
+    Test the 'exponentiate' function with various combinations of integers and floats.
+
+    This parameterized test verifies that the 'exponentiate' function correctly raises the first
+    number to the power of the second, handling both positive and negative values, as well as integers
+    and floats. Parameterization allows for efficient and comprehensive testing across multiple cases.
+
+    Parameters:
+    - a (Number): The base.
+    - b (Number): The exponent.
+    - expected (Number): The expected result of the exponentiation.
+
+    Steps:
+    1. Call the 'exponentiate' function with arguments 'a' and 'b'.
+    2. Assert that the result is equal to 'expected'.
+
+    Example:
+    >>> test_exponentiate(2, 3, 8)
+    >>> test_exponentiate(4.0, 0.5, 2.0)
+    """
+    # Call the 'exponentiate' function with the provided arguments
+    result = exponentiate(a, b)
+    
+    # Assert that the result of exponentiate(a, b) matches the expected value
+    assert result == expected, f"Expected exponentiate({a}, {b}) to be {expected}, but got {result}"
