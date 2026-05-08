@@ -7,6 +7,7 @@ from app.models.calculation import (
     Subtraction,
     Multiplication,
     Division,
+    Exponentiation,
 )
 
 # Helper function to create a dummy user_id for testing.
@@ -150,3 +151,34 @@ def test_invalid_inputs_for_division():
     division = Division(user_id=dummy_user_id(), inputs=[10])
     with pytest.raises(ValueError, match="Inputs must be a list with at least two numbers."):
         division.get_result()
+
+def test_exponentiation_get_result():
+    """
+    Test that Exponentiation.get_result returns the correct power result.
+    """
+    inputs = [2, 3, 2]
+    exponentiation = Exponentiation(user_id=dummy_user_id(), inputs=inputs)
+    result = exponentiation.get_result()
+    assert result == 64, f"Expected 64, got {result}"
+
+def test_calculation_factory_exponentiation():
+    """
+    Test the Calculation.create factory method for exponentiation.
+    """
+    inputs = [2, 3, 2]
+    calc = Calculation.create(
+        calculation_type='exponentiation',
+        user_id=dummy_user_id(),
+        inputs=inputs,
+    )
+    # Expected: (2 ** 3) ** 2 = 64
+    assert isinstance(calc, Exponentiation), "Factory did not return an Exponentiation instance."
+    assert calc.get_result() == 64, "Incorrect exponentiation result."
+
+def test_invalid_inputs_for_exponentiation():
+    """
+    Test that providing fewer than two numbers to Exponentiation.get_result raises a ValueError.
+    """
+    exponentiation = Exponentiation(user_id=dummy_user_id(), inputs=[2])
+    with pytest.raises(ValueError, match="Inputs must be a list with at least two numbers."):
+        exponentiation.get_result()
