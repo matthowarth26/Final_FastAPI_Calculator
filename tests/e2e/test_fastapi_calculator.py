@@ -471,6 +471,15 @@ def test_create_calculation_exponentiation(base_url: str):
     assert "result" in data and data["result"] == 64, f"Expected result 64, got {data.get('result')}"
 
 # ---------------------------------------------------------------------------
+# Direct Model Tests for Exponentiation Operation
+# ---------------------------------------------------------------------------
+def test_model_exponentiation():
+    dummy_user_id = uuid4()
+    calc = Calculation.create("exponentiation", dummy_user_id, [2, 3, 2])
+    result = calc.get_result()
+    assert result == 64, f"Exponentiation result incorrect: expected 64, got {result}"
+
+# ---------------------------------------------------------------------------
 # Test Calculation Creation and UI Response
 # ---------------------------------------------------------------------------
 def test_create_exponentiation_calculation_ui(page, base_url, fake_user_data):
