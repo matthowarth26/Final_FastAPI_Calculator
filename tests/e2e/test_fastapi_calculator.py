@@ -470,6 +470,64 @@ def test_create_calculation_exponentiation(base_url: str):
     # Expected result: (2 ** 3) ** 2 = 64
     assert "result" in data and data["result"] == 64, f"Expected result 64, got {data.get('result')}"
 
+def test_list_get_update_delete_exponentiation_calculation(base_url: str):
+    user_data = {
+        "first_name": "Calc",
+        "last_name": "CRUD",
+        "email": f"calc.crud{uuid4()}@example.com",
+        "username": f"calc_crud_{uuid4()}",
+        "password": "SecurePass123!",
+        "confirm_password": "SecurePass123!"
+    }
+    token_data = register_and_login(base_url, user_data)
+    access_token = token_data["access_token"]
+    headers = {"Authorization": f"Bearer {access_token}"}
+    
+    # Create exponentiation calculation
+    create_url = f"{base_url}/calculations"
+    payload = {
+        "type": "exponentiation",
+        "inputs": [2, 3],
+        "user_id": "ignored"
+    }
+    create_response = requests.post(create_url, json=payload, headers=headers)
+    assert create_response.status_code == 201, f"Calculation creation failed: {create_response.text}"
+    calc = create_response.json()
+    calc_id = calc["id"]
+    
+    # List calculations
+    list_url = f"{base_url}/calculations"
+    list_response = requests.get(list_url, headers=headers)
+    assert list_response.status_code == 200, f"List calculations failed: {list_response.text}"
+    calc_list = list_response.json()
+    assert any(c["id"] == calc_id for c in calc_list), "Created calculation not found in list"
+    
+    # Get calculation by ID
+    get_url = f"{base_url}/calculations/{calc_id}"
+    get_response = requests.get(get_url, headers=headers)
+    assert get_response.status_code == 200, f"Get calculation failed: {get_response.text}"
+    get_calc = get_response.json()
+    assert get_calc["id"] == calc_id, "Mismatch in calculation id"
+    
+    # Update calculation: change inputs (e.g., from [2, 3] to [3, 2])
+    update_url = f"{base_url}/calculations/{calc_id}"
+    update_payload = {"inputs": [3, 2]}
+    update_response = requests.put(update_url, json=update_payload, headers=headers)
+    assert update_response.status_code == 200, f"Update calculation failed: {update_response.text}"
+    updated_calc = update_response.json()
+    # For exponentiation, expected result = 3 ** 2 = 9
+    expected_result = 9
+    assert updated_calc["result"] == expected_result, f"Expected updated result {expected_result}, got {updated_calc['result']}"
+    
+    # Delete calculation
+    delete_url = f"{base_url}/calculations/{calc_id}"
+    delete_response = requests.delete(delete_url, headers=headers)
+    assert delete_response.status_code == 204, f"Delete calculation failed: {delete_response.text}"
+    
+    # Verify deletion: GET should return 404
+    get_response_after_delete = requests.get(get_url, headers=headers)
+    assert get_response_after_delete.status_code == 404, "Expected 404 after deletion"
+
 # ---------------------------------------------------------------------------
 # Direct Model Tests for Exponentiation Operation
 # ---------------------------------------------------------------------------
