@@ -1,9 +1,25 @@
 
 # FastAPI Calculator Application
 
-This project includes a calculator API and web interface where users can perform arithmetic operations such as add, subtract, multiply, and divide. The application includes user authentication and persists data using PostgreSQL. 
+This project includes a calculator API and web interface where users can perform arithmetic operations such as addition, subtraction, multiplication, division and exponentiation. The application includes user authentication and persists data using PostgreSQL. 
 
-## Key Features
+## Final Project: Additional Calculation Type
+Exponentiation
+
+Example: 
+- Inputs: `2, 3, 2`
+- Result: `64`
+- Operation: `(2 ** 3) ** 2`
+
+Feature implementation:
+- Backend operation logic
+- Pydantic calculation schema validation 
+- SQLAlchemy calculation model and factory pattern
+- FastAPI calculation endpoints
+- Unit, integration, API and Playwright E2E tests
+
+
+## Application Key Features
 - Full-stack FastAPI application with REST API and web interface
 - User authentication with JWT (access and refresh tokens)
 - PostgreSQL database with SQLAlchemy ORM 
@@ -25,7 +41,7 @@ This project includes a calculator API and web interface where users can perform
     - Delete: delete performed calculation
 
 
-## BREAD Endpoints for Calculations
+## BREAD Endpoints for Calculations (Browse, Read, Edit, Add, Delete)
 - Browse (GET /calculations): Retrieve & display all calculations 
 - Read (GET /calculations/{id}): Retrieve details of specific calculation
 - Edit (PUT /calculations/{id}): Update an existing calculation
@@ -37,7 +53,7 @@ This project includes a calculator API and web interface where users can perform
 
 Docker Hub Repository
 
-https://hub.docker.com/r/msh0626/601_module14/tags
+https://hub.docker.com/r/msh0626/601_fastapi_calculator/tags
 
 ---
 
@@ -45,8 +61,8 @@ https://hub.docker.com/r/msh0626/601_module14/tags
 
 Clone the repository
 ```
-git clone git@github.com:matthowarth26/is601_module14.git
-cd is601_module14
+git clone git@github.com:matthowarth26/Final_FastAPI_Calculator.git
+cd Final_FastAPI_Calculator
 ```
 
 Initialize virtual environment
@@ -90,17 +106,17 @@ pytest
 
 Run end-to-end tests
 ```
-pytest tests/e2e -v
+pytest tests/e2e
 ```
 
 Run integration tests
 ```
-pytest tests/integration -v
+pytest tests/integration
 ```
 
 Run unit tests
 ```
-pytest tests/unit -v
+pytest tests/unit
 ```
 
 Run coverage report
@@ -130,3 +146,24 @@ Configuration File:
 ```
 .github/workflows/test.yml
 ```
+
+---
+## Project Structure
+
+```text
+app/
+  auth/              
+  core/              
+  models/            
+  operations/        
+  schemas/           
+  main.py            
+templates/           
+static/              
+tests/
+  unit/              
+  integration/       
+  e2e/               
+.github/workflows/   
+docker-compose.yml   
+Dockerfile           
