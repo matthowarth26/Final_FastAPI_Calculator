@@ -469,3 +469,54 @@ def test_create_calculation_exponentiation(base_url: str):
     assert data["inputs"] == [2, 3, 2]
     # Expected result: (2 ** 3) ** 2 = 64
     assert "result" in data and data["result"] == 64, f"Expected result 64, got {data.get('result')}"
+
+# ---------------------------------------------------------------------------
+# Test Calculation Creation and UI Response
+# ---------------------------------------------------------------------------
+def test_create_exponentiation_calculation_ui(page, base_url, fake_user_data):
+    """
+    Test creating an exponentiation calculation through the dashboard UI.
+    """
+    password = "SecurePass123!"
+
+    # Register user through API
+    reg_response = requests.post(
+        f"{base_url}/auth/register",
+        json={
+            "first_name": fake_user_data["first_name"],
+            "last_name": fake_user_data["last_name"],
+            "email": fake_user_data["email"],
+            "username": fake_user_data["username"],
+            "password": password,
+            "confirm_password": password,
+        }
+    )
+    assert reg_response.status_code == 201
+
+    # Login through UI
+    page.goto(f"{base_url}/login")
+    page.fill("#username", fake_user_data["username"])
+    page.fill("#password", password)
+    page.click("button[type='submit']")
+
+    page.locator("#successAlert").wait_for()
+
+    # Go to dashboard
+    page.goto(f"{base_url}/dashboard")
+
+    # Create exponentiation calculation
+    page.select_option("#calcType", "exponentiation")
+    page.fill("#calcInputs", "2, 3, 2")
+    page.click("button[type='submit']")
+
+    # Verify UI success message
+    page.locator("#successAlert").wait_for()
+    success_text = page.locator("#successMessage").inner_text()
+    assert "Calculation complete" in success_text
+    assert "64" in success_text
+
+    # Verify calculation appears in history table
+    table_text = page.locator("#calculationsTable").inner_text()
+    assert "exponentiation" in table_text.lower()
+    assert "2, 3, 2" in table_text
+    assert "64" in table_text
